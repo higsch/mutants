@@ -1,6 +1,9 @@
 <script>
   import { onMount } from 'svelte';
+  import { scaleLinear, extent } from 'd3';
   import { loadMutantData, loadShape } from './utils/load';
+  import { stackData } from './utils/math';
+  import { variantColors } from './utils/colors';
   
   import Canvas from './components/Canvas.svelte';
   import Flows from './components/Flows.svelte';
@@ -14,8 +17,16 @@
     data = await loadMutantData();
     shape = await loadShape();
   });
+  
+  $: xScale = scaleLinear()
+    .domain(extent(data, d => d.sample_date))
+    .range([0, width]);
 
-  $: renderedData = data;
+  $: stackedData = stackData(data);
+
+  $: yScale = scaleLinear()
+    .domain(extent(stackedData.map((d) => d.map((d) => [d[0], d[1]])).flat(2)))
+    .range([height, 0]);
 </script>
 
 <div class="app-wrapper">
@@ -24,15 +35,20 @@
     bind:clientWidth={width}
     bind:clientHeight={height}
   >
-    <Canvas
-      width={width}
-      height={height}
-    >
-      <Flows
-        data={renderedData}
-        shape={shape}
-      />
-    </Canvas>
+    {#if (xScale && yScale && shape)}
+      <Canvas
+        width={width}
+        height={height}
+      >
+        <Flows
+          data={stackedData}
+          xScale={xScale}
+          yScale={yScale}
+          shape={shape}
+          colors={variantColors}
+        />
+      </Canvas>
+    {/if}
   </div>
 </div>
 
