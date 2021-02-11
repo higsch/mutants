@@ -33,11 +33,11 @@
 
     // ctx.clearRect(0, 0, width, height);
 
+    ctx.save();
     drawFunctions.forEach((fn) => {
-      // ctx.save();
       fn(ctx);
-      // ctx.restore();
     });
+    ctx.restore();
 
     pendingInvalidation = false;
   }

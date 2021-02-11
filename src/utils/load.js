@@ -1,7 +1,7 @@
 import { csv, timeParse } from 'd3';
 
 const mutantDataPath = 'data/mutant_data.csv';
-const shapePath = 'data/greater_london.geojson';
+const shapePath = 'data/london.geojson';
 
 const parseDate = timeParse('%Y-%m-%d');
 
@@ -13,7 +13,8 @@ export const loadMutantData = async () => {
       return {
         ...d,
         prob: +d.prob,
-        sample_date: parseDate(d.sample_date)
+        sample_date: +d.sample_date.replace(/-/g, ''),
+        sample_date_num: +d.sample_date_num
       };
     });
   } catch(err) {
@@ -28,6 +29,7 @@ export const loadMutantData = async () => {
 export const loadShape = async () => {
   const res = await fetch(shapePath);
   const parsed = await res.json();
+  const { features } = parsed;
 
-  return parsed;
+  return features[0];
 };

@@ -1,16 +1,20 @@
-import { ascending, stack, stackOffsetSilhouette, extent, range as d3range } from 'd3';
+import { ascending, stack, stackOffsetSilhouette, stackOrderAppearance, range as d3range } from 'd3';
 
 export const stackData = (data) => {
   if (data.length === 0) return [];
 
-  const dateNums = [...new Set(data.map(d => +d.sample_date_num))].sort((a, b) => ascending(a, b));
+  const nums = [...new Set(data.map(d => d.sample_date_num))].sort((a, b) => ascending(a, b));
   const keys = [...new Set(data.map(d => d.variant))].sort((a, b) => ascending(a, b));
 
   let input = [];
-  dateNums.forEach(dateNum => {
+  nums.forEach(num => {
     let obj = {};
     keys.forEach(key => {
-      obj = {...obj, [key]: data.find(d => +d.sample_date_num === dateNum && d.variant === key)};
+      obj = {
+        ...obj,
+        [key]: data.find(d => d.sample_date_num === num && d.variant === key),
+        sampleDateNum: num,
+      };
     });
     input = [...input, obj];
   });
@@ -20,6 +24,7 @@ export const stackData = (data) => {
     .keys(keys)
     .value((d, key) => d[key].prob)
     .offset(stackOffsetSilhouette)
+    .order(stackOrderAppearance)
     (input);
   
   return stream;

@@ -1,6 +1,5 @@
 <script>
   import { getContext, onMount, onDestroy, afterUpdate } from 'svelte';
-  import { range } from 'd3';
   import { drawFlowPart, getProjection } from '../utils/flow';
 
   export let data = [];
@@ -15,10 +14,10 @@
     if (!d) return;
 
     const { 0: yPos0, 1: yPos1, data } = d;
-    const { sample_date: sampleDate } = Object.values(data)[0];
+    const { sampleDateNum } = data;
     const y0 = yScale(yPos0);
     const y1 = yScale(yPos1);
-    const x = xScale(sampleDate);
+    const x = xScale(sampleDateNum);
 
     return {
       x, y0, y1
@@ -28,13 +27,19 @@
   function draw(ctx) {
     if (!data || !data.length) return;
 
-    const xIndices = range([...new Set(data.map(d => d.length))]).reverse();
-    xIndices.forEach(xIndex => {
-      data.slice(-1).forEach(flow => {
-        const current = getCoordinates(flow[xIndex]);
-        const next = getCoordinates(flow[xIndex + 1]);
-        
-        drawFlowPart(ctx, projection, shape, current, next);
+    ctx.globalAlpha = 1.0;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#FFFFFF';
+    const sampleDateNums = [...new Set(data.map(flow => flow.map(d => d.data.sampleDateNum)).flat(2))];
+    sampleDateNums.filter((_, i) => i % 30).forEach(sampleDateNum => {
+      data.forEach(flow => {
+        const { key } = flow;
+        const d = flow.find(d => d.data.sampleDateNum === sampleDateNum);
+        const dNext = flow.find(d => d.data.sampleDateNum === sampleDateNum + 1);
+        const { color1, color2 } = colors.find(d => d.variant === key);
+        const current = getCoordinates(d);
+        const next = getCoordinates(dNext);
+        drawFlowPart(ctx, projection, shape, current, next, color1, color2);
       });
     });
   }

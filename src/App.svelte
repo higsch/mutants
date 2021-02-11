@@ -7,7 +7,7 @@
   
   import Canvas from './components/Canvas.svelte';
   import Flows from './components/Flows.svelte';
-
+  
   let width = 0;
   let height = 0;
   let data = [];
@@ -19,7 +19,7 @@
   });
   
   $: xScale = scaleLinear()
-    .domain(extent(data, d => d.sample_date))
+    .domain(extent(data, d => d.sample_date_num))
     .range([0, width]);
 
   $: stackedData = stackData(data);
