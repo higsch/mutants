@@ -6,7 +6,7 @@ export const getProjection = () => {
   return geoMercator();
 };
 
-export const drawFlowPart = (ctx, projection, shape, current, next, color1, color2) => {
+export const drawFlowPart = (ctx, projection, shape, current, next, color1, color2, progress) => {
   if (!current || !next) return;
 
   const height = Math.abs(current.y0 - current.y1);
@@ -15,10 +15,7 @@ export const drawFlowPart = (ctx, projection, shape, current, next, color1, colo
   const heightNext = Math.abs(next.y0 - next.y1);
   const widthNext = heightNext;
 
-  const gradient = ctx.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, color1);
-  gradient.addColorStop(1, color2);
-  ctx.strokeStyle = gradient;
+  ctx.strokeStyle = color1;
   
   for (let i = 0; i < steps; i++) {
     const interpolatedWidth = width + (i / steps) * (widthNext - width);
@@ -31,10 +28,12 @@ export const drawFlowPart = (ctx, projection, shape, current, next, color1, colo
       .projection(scaledProjection)
       .context(ctx);
 
-    ctx.setTransform(1, Math.random() * 0.01, Math.random() * 0.01, 1, interpolatedX - interpolatedWidth / 2, interpolatedY1);
+    ctx.setTransform(1, 0, 0, 1, interpolatedX, interpolatedY1);
 
     ctx.beginPath();
+    ctx.lineTo(10, 10);
     gPath(shape);
+    // ctx.arc(0, 0, interpolatedWidth / 2, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.stroke();
   }

@@ -27,19 +27,20 @@
   function draw(ctx) {
     if (!data || !data.length) return;
 
-    ctx.globalAlpha = 1.0;
-    ctx.lineWidth = 1;
-    ctx.fillStyle = '#FFFFFF';
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 0.1;
+    ctx.fillStyle = '#EEEEEE';
     const sampleDateNums = [...new Set(data.map(flow => flow.map(d => d.data.sampleDateNum)).flat(2))];
-    sampleDateNums.filter((_, i) => i % 30).forEach(sampleDateNum => {
-      data.forEach(flow => {
+    sampleDateNums.forEach(sampleDateNum => {
+      data.forEach((flow, i, arr) => {
         const { key } = flow;
         const d = flow.find(d => d.data.sampleDateNum === sampleDateNum);
         const dNext = flow.find(d => d.data.sampleDateNum === sampleDateNum + 1);
         const { color1, color2 } = colors.find(d => d.variant === key);
         const current = getCoordinates(d);
         const next = getCoordinates(dNext);
-        drawFlowPart(ctx, projection, shape, current, next, color1, color2);
+        const progress = i / (arr.length - 1);
+        drawFlowPart(ctx, projection, shape, current, next, color1, color2, progress);
       });
     });
   }

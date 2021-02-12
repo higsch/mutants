@@ -21,7 +21,7 @@ export const loadMutantData = async () => {
     console.log(err);
   }
 
-  const filteredRes = res.filter(d => d.nhs_name === 'London');
+  const filteredRes = res.filter(d => d.nhs_name === 'London').filter(d => d.variant !== 'minority variants');
 
   return filteredRes;
 };
@@ -31,5 +31,5 @@ export const loadShape = async () => {
   const parsed = await res.json();
   const { features } = parsed;
 
-  return features[0];
+  return features.find(d => d.properties.EER13NM === 'London');
 };

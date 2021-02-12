@@ -1,4 +1,4 @@
-import { ascending, stack, stackOffsetSilhouette, stackOrderAppearance, range as d3range } from 'd3';
+import { ascending, stack, stackOffsetSilhouette } from 'd3';
 
 export const stackData = (data) => {
   if (data.length === 0) return [];
@@ -24,7 +24,6 @@ export const stackData = (data) => {
     .keys(keys)
     .value((d, key) => d[key].prob)
     .offset(stackOffsetSilhouette)
-    .order(stackOrderAppearance)
     (input);
   
   return stream;

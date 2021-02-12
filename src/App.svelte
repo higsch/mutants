@@ -7,7 +7,7 @@
   
   import Canvas from './components/Canvas.svelte';
   import Flows from './components/Flows.svelte';
-  
+
   let width = 0;
   let height = 0;
   let data = [];
